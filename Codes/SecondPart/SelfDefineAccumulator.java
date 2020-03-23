@@ -13,7 +13,7 @@ import org.apache.spark.util.AccumulatorV2;
  * value: AccumulatorV2对外访问的数据结果
  */
 public class SelfDefineAccumulator extends AccumulatorV2<String,String> {//两个string，前者是传进去的值，后者是返回的值
-    String returnResult = "";
+    String returnResult = ""; //全局变量
 
     /**
      * 与reset()方法保持一致，返回true。
@@ -26,10 +26,10 @@ public class SelfDefineAccumulator extends AccumulatorV2<String,String> {//两�
     }
 
     @Override
-    public AccumulatorV2<String, String> copy() {
-        SelfDefineAccumulator acc  = new SelfDefineAccumulator();
-        acc.returnResult = this.returnResult;
-        return acc;
+    public AccumulatorV2<String, String> copy() {//copy即复制一个新的空的累加器
+        SelfDefineAccumulator acc  = new SelfDefineAccumulator(); //生成一个新的累加器
+        acc.returnResult = this.returnResult; // returnResult定义的时候为空
+        return acc; //返回一个新的空的累加器
     }
 
     /**
@@ -45,8 +45,8 @@ public class SelfDefineAccumulator extends AccumulatorV2<String,String> {//两�
                 + Constants.FIELD_ABNORMAL_MONITOR_CAMERA_INFOS+"= ";
     }
 
-    /**
-     * 每个分区会拿着reset初始化的值 ，在各自的分区内相加
+    /**分区内部做相加
+     * 每个分区会拿着reset初始化的值，在各自的分区内相加
      * @param v
      */
     @Override
@@ -55,7 +55,7 @@ public class SelfDefineAccumulator extends AccumulatorV2<String,String> {//两�
         returnResult = myAdd(returnResult,v);
     }
 
-    /**
+    /**分区之间做相加
      * 每个分区最终的结果和初始值 returnResult=""  做累加
      * @param other
      */
